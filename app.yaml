@@ -1,6 +1,8 @@
 runtime: python37
 
-handlers:
+entrypoint: daphne -b 0.0.0.0 -p 8000 TestServer.asgi:application
+
+ehandlers:
 # This configures Google App Engine to serve the files in the app's static
 # directory.
 - url: /static

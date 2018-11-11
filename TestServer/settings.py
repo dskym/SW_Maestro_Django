@@ -151,3 +151,6 @@ CHANNEL_LAYERS = {
         },
     },
 }
+
+CELERY_TIMEZONE = 'Asia/Seoul'
+CELERY_ENABLE_UTC = False

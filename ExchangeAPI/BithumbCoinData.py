@@ -3,7 +3,7 @@ from datetime import datetime
 import pymysql.cursors
 
 
-history = BithumbAPI.get_transaction_history(count=100)
+history = BithumbAPI.get_transaction_history(count=100, cont_no=30475394)
 pivotDate = datetime.strptime('2018-07-01 00:00:00', '%Y-%m-%d %H:%M:%S')
 
 coin_data = []
@@ -28,6 +28,8 @@ try:
     while True:
         flag = False
 
+        history['data'].sort(key=lambda v: v['transaction_date'], reverse=True)
+
         for index, data in enumerate(history['data']):
             if beforeData is None:
                 beforeData = data
@@ -51,8 +53,6 @@ try:
             else:
                 temp_data['volume'] += float(beforeData['units_traded'])
                 temp_data['open'] = float(beforeData['price'])
-
-                #coin_data.insert(0, temp_data.copy())
 
                 if temp_data['time'] != '':
                     with conn.cursor() as cursor:

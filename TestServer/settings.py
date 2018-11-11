@@ -25,7 +25,10 @@ SECRET_KEY = '9*0fg2g@p!i81shq1-nt8#gw%!ra5fk5o80xtlm#7$m41@#fa)'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    '35.200.62.52',
+    'http://crypstal-221817.appspot.com',
+]
 
 
 # Application definition

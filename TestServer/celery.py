@@ -20,8 +20,6 @@ app.conf.update(
     CELERY_TASK_SERIALIZER='json',
 )
 
-"""
-
 app.conf.beat_schedule = {
     'say_hello-every-minutes': {
         'task': 'TestServer.tasks.hello',
@@ -29,5 +27,3 @@ app.conf.beat_schedule = {
         'args': ()
     },
 }
-
-"""

@@ -4,7 +4,7 @@ import pymysql.cursors
 
 
 history = BithumbAPI.get_transaction_history(count=100)
-pivotDate = datetime.strptime('2018-11-11 18:30:00', '%Y-%m-%d %H:%M:%S')
+pivotDate = datetime.strptime('2018-07-01 00:00:00', '%Y-%m-%d %H:%M:%S')
 
 coin_data = []
 
@@ -79,6 +79,7 @@ try:
 
         for data in coin_data[:-1]:
             cursor.execute(sql, (data['time'], data['high'], data['low'], data['open'], data['close'], data['volume']))
-    conn.commit()
+
+        conn.commit()
 finally:
     conn.close()

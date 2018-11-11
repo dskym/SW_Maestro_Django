@@ -47,7 +47,7 @@ class ReinforceLearningStrategy(models.Model):
 
 
 class Bithumb_BTC_1m(models.Model):
-    time = models.DateTimeField()
+    time = models.DateTimeField(primary_key=True)
     high = models.FloatField()
     low = models.FloatField()
     open = models.FloatField()
@@ -56,7 +56,7 @@ class Bithumb_BTC_1m(models.Model):
 
 
 class Bithumb_BTC_1h(models.Model):
-    time = models.DateTimeField()
+    time = models.DateTimeField(primary_key=True)
     high = models.FloatField()
     low = models.FloatField()
     open = models.FloatField()
@@ -65,7 +65,7 @@ class Bithumb_BTC_1h(models.Model):
 
 
 class Bithumb_BTC_1d(models.Model):
-    time = models.DateTimeField()
+    time = models.DateTimeField(primary_key=True)
     high = models.FloatField()
     low = models.FloatField()
     open = models.FloatField()

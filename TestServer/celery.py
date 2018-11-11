@@ -21,9 +21,9 @@ app.conf.update(
 )
 
 app.conf.beat_schedule = {
-    'say_hello-every-minutes': {
-        'task': 'TestServer.tasks.hello',
-        'schedule': 1,
+    'save_bithumb_btc_every-minutes': {
+        'task': 'TestApp.tasks.save_bithumb_btc_1m',
+        'schedule': crontab(),
         'args': ()
-    },
+    }
 }

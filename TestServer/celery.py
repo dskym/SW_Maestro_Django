@@ -10,17 +10,7 @@ app = Celery('TestServer')
 app.config_from_object('django.conf:settings')
 app.autodiscover_tasks(lambda: settings.INSTALLED_APPS)
 
-app.conf.update(
-    BROKER_URL='redis://localhost:6379/0',
-    CELERY_RESULT_BACKEND='redis://localhost:6379/0',
-    CELERY_TIMEZONE='Asia/Seoul',
-    CELERY_ENABLE_UTC=False,
-    CELERY_RESULT_SERIALIZER='json',
-    CELERY_ACCEPT_CONTENT=['application/json'],
-    CELERY_TASK_SERIALIZER='json',
-)
-
-app.conf.beat_schedule = {
+CELERYBEAT_SCHEDULE = {
     'save_bithumb_btc_every-minutes': {
         'task': 'TestApp.tasks.save_bithumb_btc_1m',
         'schedule': 1,
@@ -37,5 +27,17 @@ app.conf.beat_schedule = {
         'task': 'TestApp.tasks.hello2',
         'schedule': crontab(),
         'args': ()
-    }
+    },
 }
+
+app.conf.update(
+    BROKER_URL='redis://localhost:6379/0',
+    CELERY_RESULT_BACKEND='redis://localhost:6379/0',
+    CELERY_TIMEZONE='Asia/Seoul',
+    CELERY_ENABLE_UTC=False,
+    CELERY_RESULT_SERIALIZER='json',
+    CELERY_ACCEPT_CONTENT=['application/json'],
+    CELERY_TASK_SERIALIZER='json',
+    CELERYBEAT_SCHEDULE=CELERYBEAT_SCHEDULE
+)
+

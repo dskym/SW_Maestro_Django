@@ -10,8 +10,11 @@ from pytz import timezone
 def hello():
     return 'hello'
 
+
+@app.task
 def hello2():
     return 'hello2'
+
 
 @app.task
 def save_bithumb_btc_1m():

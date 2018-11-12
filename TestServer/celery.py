@@ -22,7 +22,7 @@ app.conf.update(
 
 app.conf.beat_schedule = {
     'save_bithumb_btc_every-minutes': {
-        'task': 'TestApp.tasks.hello',
+        'task': 'TestApp.tasks.save_bithumb_btc_1m',
         'schedule': 1,
         'args': ()
     },

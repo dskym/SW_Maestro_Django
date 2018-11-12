@@ -7,6 +7,13 @@ from pytz import timezone
 
 
 @app.task
+def hello():
+    return 'hello'
+
+def hello2():
+    return 'hello2'
+
+@app.task
 def save_bithumb_btc_1m():
     conn = pymysql.connect(host='35.201.207.75',
                            user='root',

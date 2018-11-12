@@ -22,7 +22,19 @@ app.conf.update(
 
 app.conf.beat_schedule = {
     'save_bithumb_btc_every-minutes': {
-        'task': 'TestApp.tasks.save_bithumb_btc_1m',
+        'task': 'TestApp.tasks.hello',
+        'schedule': 1,
+        'args': ()
+    },
+
+    'hello-minutes': {
+        'task': 'TestApp.tasks.hello',
+        'schedule': crontab(minute='*/1'),
+        'args': ()
+    },
+
+    'hello2-minutes': {
+        'task': 'TestApp.tasks.hello2',
         'schedule': crontab(),
         'args': ()
     }

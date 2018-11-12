@@ -224,14 +224,3 @@ class CandleView(APIView):
                     serializer = Bithumb_BTC_1d_Serializer(queryset, many=True)
 
         return Response(serializer.data)
-
-    def post(self, request):
-        coin_data = get_coin_data()
-
-        for data in coin_data:
-            serializer = Bithumb_BTC_1m_Serializer(data=data)
-
-            if serializer.is_valid():
-                serializer.save()
-
-        return Response(status=status.HTTP_200_OK)

@@ -27,7 +27,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = [
     '35.200.62.52',
-    'http://crypstal-221817.appspot.com',
+    '127.0.0.1',
 ]
 
 

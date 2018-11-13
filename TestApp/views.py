@@ -203,24 +203,53 @@ class CandleView(APIView):
     def get(self, request):
         data = request.query_params
 
-        # 얘네는 일 단위로
-        fromDate = data['from']
-        toDate = data['to']
-
         exchange = data['exchange'].capitalize()
         coin = data['coin'].upper()
         period = data['period'].lower()
 
-        if exchange == 'Bithumb':
-            if coin == 'BTC':
-                if period == '1m':
-                    queryset = Bithumb_BTC_1m.objects.filter(time__range=(fromDate, toDate))
-                    serializer = Bithumb_BTC_1m_Serializer(queryset, many=True)
-                elif period == '1h':
-                    queryset = Bithumb_BTC_1h.objects.filter(time__range=(fromDate, toDate))
-                    serializer = Bithumb_BTC_1h_Serializer(queryset, many=True)
-                elif period == '1d':
-                    queryset = Bithumb_BTC_1d.objects.filter(time__range=(fromDate, toDate))
-                    serializer = Bithumb_BTC_1d_Serializer(queryset, many=True)
+        # from to
+        if 'from' in data and 'to' in data:
+            fromDate = data['from']
+            toDate = data['to']
+
+            if exchange == 'Bithumb':
+                if coin == 'BTC':
+                    if period == '1m':
+                        queryset = Bithumb_BTC_1m.objects.filter(time__range=(fromDate, toDate))
+                        serializer = Bithumb_BTC_1m_Serializer(queryset, many=True)
+                    elif period == '1h':
+                        queryset = Bithumb_BTC_1h.objects.filter(time__range=(fromDate, toDate))
+                        serializer = Bithumb_BTC_1h_Serializer(queryset, many=True)
+                    elif period == '1d':
+                        queryset = Bithumb_BTC_1d.objects.filter(time__range=(fromDate, toDate))
+                        serializer = Bithumb_BTC_1d_Serializer(queryset, many=True)
+        # count
+        elif 'count' in data:
+            count = int(data['count'])
+
+            if exchange == 'Bithumb':
+                if coin == 'BTC':
+                    if period == '1m':
+                        queryset = Bithumb_BTC_1m.objects.order_by('-time')[:count]
+                        serializer = Bithumb_BTC_1m_Serializer(queryset, many=True)
+                    elif period == '1h':
+                        queryset = Bithumb_BTC_1h.objects.order_by('-time')[:count]
+                        serializer = Bithumb_BTC_1h_Serializer(queryset, many=True)
+                    elif period == '1d':
+                        queryset = Bithumb_BTC_1d.objects.order_by('-time')[:count]
+                        serializer = Bithumb_BTC_1d_Serializer(queryset, many=True)
+        # default
+        else:
+            if exchange == 'Bithumb':
+                if coin == 'BTC':
+                    if period == '1m':
+                        queryset = Bithumb_BTC_1m.objects.order_by('-time')[:200]
+                        serializer = Bithumb_BTC_1m_Serializer(queryset, many=True)
+                    elif period == '1h':
+                        queryset = Bithumb_BTC_1h.objects.order_by('-time')[:200]
+                        serializer = Bithumb_BTC_1h_Serializer(queryset, many=True)
+                    elif period == '1d':
+                        queryset = Bithumb_BTC_1d.objects.order_by('-time')[:200]
+                        serializer = Bithumb_BTC_1d_Serializer(queryset, many=True)
 
         return Response(serializer.data)

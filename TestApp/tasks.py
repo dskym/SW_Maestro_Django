@@ -96,7 +96,7 @@ def save_bithumb_btc_1m():
 
     return temp_data
 
-
+"""
 @app.task
 def save_bithumb_btc_1h():
     conn = pymysql.connect(host='35.201.207.75',
@@ -186,7 +186,7 @@ def save_bithumb_btc_1h():
         conn.close()
 
     return temp_data
-
+"""
 
 @app.task
 def high_low_strategy(highPrice, lowPrice, asset):

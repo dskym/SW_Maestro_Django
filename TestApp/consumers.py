@@ -34,15 +34,16 @@ class TradeConsumer(WebsocketConsumer):
             while True:
                 information = None
 
-                if position == 'BUY':
-                    infomation = get_order_information(result['order_id'], 'ask', 'BTC')
-                else:
-                    infomation = get_order_information(result['order_id'], 'bid', 'BTC')
+                if result is None:
+                    if position == 'BUY':
+                        infomation = get_order_information(result['order_id'], 'ask', 'BTC')
+                    else:
+                        infomation = get_order_information(result['order_id'], 'bid', 'BTC')
 
-                if information['total'] == 'null':
-                    sleep(60)
+                    if information['total'] == 'null':
+                        sleep(60)
 
-                    continue
+                        continue
 
                 if position == 'BUY':
                     if result is None:

@@ -12,7 +12,7 @@ from TestApp.models import TradeHistory, Bot, HighLowStrategy, ReinforceLearning
 from TestApp.serializers import TradeHistorySerializer, BotSerializer, HighLowStrategySerializer, \
     ReinforceLearningStrategySerializer, Bithumb_BTC_1m_Serializer, Bithumb_BTC_1d_Serializer, Bithumb_BTC_1h_Serializer
 
-from TestApp.tasks import high_low_strategy
+from TestApp.strategy import high_low_strategy
 
 from django_celery_beat.models import PeriodicTask, IntervalSchedule
 
@@ -192,19 +192,28 @@ class TradeView(APIView):
             highPrice = strategy.HighPrice
             lowPrice = strategy.LowPrice
 
+            print(isTrade)
+
             if isTrade is True:
                 exist = False
 
+                print(exist)
+                print(PeriodicTask.objects.count())
+
                 if PeriodicTask.objects.count() != 0:
                     for task in PeriodicTask.objects.all():
+                        print(task.args)
                         if task.name == 'Bot' + str(botId):
                             exist = True
                             task.enable = True
+                            task.save()
+
+                print(exist)
 
                 if exist is False:
                     schedule, created = IntervalSchedule.objects.get_or_create(every=1, period=IntervalSchedule.MINUTES)
 
-                    PeriodicTask.objects.create(
+                    task = PeriodicTask.objects.create(
                         interval=schedule,
                         name='Bot' + str(botId),
                         task='TestApp.tasks.high_low_strategy',
@@ -214,6 +223,9 @@ class TradeView(APIView):
                 for task in PeriodicTask.objects.all():
                     if task.name == 'Bot' + str(botId):
                         task.enable = False
+                        task.save()
+
+
 
             return Response(status=status.HTTP_200_OK)
 

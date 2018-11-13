@@ -2,14 +2,80 @@ from channels.generic.websocket import WebsocketConsumer
 import json
 import subprocess
 import os
+import random
+from ExchangeAPI.BithumbAPI import market_sell, market_buy, get_order_information
+from TestApp.strategy import high_low_strategy
+from TestApp.models import Bot
+from time import sleep
+
+
+class TradeConsumer(WebsocketConsumer):
+    def connect(self):
+        self.accept()
+
+    def disconnect(self, close_code):
+        pass
+
+    def receive(self, text_data):
+        data = json.loads(text_data)
+
+        botId = data['botId']
+        strategyName = data['name']
+
+        bot = Bot.objects.get(id=botId)
+        asset = bot.asset
+
+        result = None
+        position = 'BUY'
+
+        if strategyName == 'HighLowStrategy':
+            highPrice = data['HighPrice']
+            lowPrice = data['LowPrice']
+
+            while True:
+                information = None
+
+                if position == 'BUY':
+                    infomation = get_order_information(result['order_id'], 'ask', 'BTC')
+                else:
+                    infomation = get_order_information(result['order_id'], 'bid', 'BTC')
+
+                if information['total'] == 'null':
+                    sleep(60)
+
+                    continue
+
+                if position == 'BUY':
+                    if result is None:
+                        result = market_buy('BTC', asset / lowPrice, lowPrice, payment_currency='KRW')
+                    else:
+                        result = market_buy('BTC', information['units_remaining'], lowPrice, payment_currency='KRW')
+
+                    position = 'SELL'
+                else:
+                    result = market_sell('BTC', result['units'], highPrice, payment_currency='BTC')
+                    position = 'BUY'
+
+                print(result)
+
+                sleep(60)
+
+        """
+        self.send(text_data=json.dumps({
+            'result': 'success'
+        }))
+        """
 
 
 class TrainConsumer(WebsocketConsumer):
     def connect(self):
+        self.num = random.randint(1, 100)
+        print(self.num)
         print('connect')
         self.accept()
 
     def disconnect(self, close_code):
+        print(self.num)
         print('disconnect')
 
     def receive(self, text_data):
@@ -19,7 +85,7 @@ class TrainConsumer(WebsocketConsumer):
         toDate = data['toDate']
         coin = data['coin']
 
-        self.train(fromDate, toDate, coin)
+        #self.train(fromDate, toDate, coin)
 
         self.send(text_data=json.dumps({
             'result': 'success'

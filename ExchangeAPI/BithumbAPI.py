@@ -9,14 +9,14 @@ import json
 from datetime import datetime
 
 
-api_url = "https://api.bithumb.com"
 api_key = "5709ca4841ba8059e7246b55b8358a37"
 api_secret = "5105ce0f3360623c6ce8c6f8f6212cff"
 
 
 class XCoinAPI:
-    api_key = ""
-    api_secret = ""
+    api_url = "https://api.bithumb.com"
+    api_key = "5709ca4841ba8059e7246b55b8358a37"
+    api_secret = "5105ce0f3360623c6ce8c6f8f6212cff"
 
     def __init__(self, api_key, api_secret):
         self.api_key = api_key
@@ -120,7 +120,17 @@ def get_transaction_history(count=None, cont_no=None, currency='BTC'):
 
     return json.loads(response.content.decode())
 
+def get_order_information(order_id, type, currency='BTC'):
+    api = XCoinAPI(api_key, api_secret)
 
+    params = {
+        'order_id': order_id,
+        'type': type
+    }
+
+    result = api.xcoinApiCall("/info/orders", params)
+
+    return result
 def get_order_detail(order_id, type, currency='BTC'):
     api = XCoinAPI(api_key, api_secret)
 

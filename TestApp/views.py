@@ -184,13 +184,13 @@ class TradeView(APIView):
     def post(self, request, botId=None):
         bot = Bot.objects.get(id=botId)
         isTrade = request.data['isTrade']
-        strategyName = bot['strategy']
+        strategyName = bot.strategy
 
         if strategyName == 'HighLowStrategy':
             strategy = HighLowStrategy.objects.get(botId=botId)
 
-            highPrice = strategy['HighPrice']
-            lowPrice = strategy['LowPrice']
+            highPrice = strategy.HighPrice
+            lowPrice = strategy.LowPrice
 
             if isTrade is True:
                 exist = False

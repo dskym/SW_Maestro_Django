@@ -34,7 +34,7 @@ class TradeConsumer(WebsocketConsumer):
             while True:
                 information = None
 
-                if result is None:
+                if result is not None:
                     if position == 'BUY':
                         infomation = get_order_information(result['order_id'], 'ask', 'BTC')
                     else:

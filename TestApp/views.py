@@ -12,8 +12,6 @@ from TestApp.models import TradeHistory, Bot, HighLowStrategy, ReinforceLearning
 from TestApp.serializers import TradeHistorySerializer, BotSerializer, HighLowStrategySerializer, \
     ReinforceLearningStrategySerializer, Bithumb_BTC_1m_Serializer, Bithumb_BTC_1d_Serializer, Bithumb_BTC_1h_Serializer
 
-from TestApp.strategy import high_low_strategy
-
 from django_celery_beat.models import PeriodicTask, IntervalSchedule
 
 

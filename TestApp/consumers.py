@@ -4,7 +4,6 @@ import subprocess
 import os
 import random
 from ExchangeAPI.BithumbAPI import market_sell, market_buy, get_order_information
-from TestApp.strategy import high_low_strategy
 from TestApp.models import Bot
 from time import sleep
 

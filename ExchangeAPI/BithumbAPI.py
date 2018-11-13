@@ -120,6 +120,7 @@ def get_transaction_history(count=None, cont_no=None, currency='BTC'):
 
     return json.loads(response.content.decode())
 
+
 def get_order_information(order_id, type, currency='BTC'):
     api = XCoinAPI(api_key, api_secret)
 
@@ -131,6 +132,8 @@ def get_order_information(order_id, type, currency='BTC'):
     result = api.xcoinApiCall("/info/orders", params)
 
     return result
+
+
 def get_order_detail(order_id, type, currency='BTC'):
     api = XCoinAPI(api_key, api_secret)
 
@@ -141,6 +144,18 @@ def get_order_detail(order_id, type, currency='BTC'):
     }
 
     result = api.xcoinApiCall("/info/order_detail", params)
+
+    return result
+
+
+def get_user_transactions(currency='BTC'):
+    api = XCoinAPI(api_key, api_secret)
+
+    params = {
+        'currency': currency,
+    }
+
+    result = api.xcoinApiCall("/info/user_transactions", params)
 
     return result
 

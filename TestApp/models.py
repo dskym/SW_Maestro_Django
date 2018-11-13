@@ -2,26 +2,6 @@ from django.db import models
 
 
 # Create your models here.
-class Training(models.Model):
-    startDate = models.CharField(max_length=20)
-    endDate = models.CharField(max_length=20)
-    coin = models.CharField(max_length=20)
-
-
-class Running(models.Model):
-    filename = models.CharField(max_length=20)
-    coin = models.CharField(max_length=20)
-    asset = models.IntegerField()
-
-
-class TradeHistory(models.Model):
-    time = models.DateTimeField(auto_now_add=True)
-    position = models.CharField(max_length=5)
-    price = models.FloatField()
-    amount = models.FloatField()
-    asset = models.FloatField()
-
-
 class Bot(models.Model):
     name = models.CharField(max_length=20)
     asset = models.FloatField()
@@ -72,3 +52,11 @@ class Bithumb_BTC_1d(models.Model):
     close = models.FloatField()
     volume = models.FloatField()
 
+
+class TradeHistory(models.Model):
+    time = models.DateTimeField(auto_now_add=True)
+    position = models.CharField(max_length=5)
+    price = models.FloatField()
+    amount = models.FloatField()
+    asset = models.FloatField()
+    botId = models.ForeignKey(Bot, on_delete=models.CASCADE)

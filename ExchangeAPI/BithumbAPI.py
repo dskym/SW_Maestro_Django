@@ -84,7 +84,7 @@ def market_buy(order_currency, units, price, payment_currency='KRW'):
 
     result = api.xcoinApiCall("/trade/place", params)
 
-    print(result)
+    return result
 
 
 def market_sell(order_currency, units, price, payment_currency='KRW'):
@@ -100,7 +100,7 @@ def market_sell(order_currency, units, price, payment_currency='KRW'):
 
     result = api.xcoinApiCall("/trade/place", params)
 
-    print(result)
+    return result
 
 
 def get_transaction_history(count=None, cont_no=None, currency='BTC'):
@@ -119,6 +119,20 @@ def get_transaction_history(count=None, cont_no=None, currency='BTC'):
     response = requests.get(url, params=params)
 
     return json.loads(response.content.decode())
+
+
+def get_order_detail(order_id, type, currency='BTC'):
+    api = XCoinAPI(api_key, api_secret)
+
+    params = {
+        'currency': currency,
+        'order_id': order_id,
+        'type': type
+    }
+
+    result = api.xcoinApiCall("/info/order_detail", params)
+
+    return result
 
 
 def get_coin_data():

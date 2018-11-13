@@ -8,10 +8,13 @@ from django.db import transaction
 
 from TestApp.models import TradeHistory, Bot, HighLowStrategy, ReinforceLearningStrategy, \
     Bithumb_BTC_1m, Bithumb_BTC_1h, Bithumb_BTC_1d
+
 from TestApp.serializers import TradeHistorySerializer, BotSerializer, HighLowStrategySerializer, \
     ReinforceLearningStrategySerializer, Bithumb_BTC_1m_Serializer, Bithumb_BTC_1d_Serializer, Bithumb_BTC_1h_Serializer
 
-from ExchangeAPI.BithumbAPI import get_coin_data
+from TestApp.tasks import high_low_strategy
+
+from django_celery_beat.models import PeriodicTask, IntervalSchedule
 
 
 class BotView(APIView):
@@ -119,7 +122,8 @@ class BotView(APIView):
                     }
 
                     reinforceLearningStrategy = ReinforceLearningStrategy.objects.get(botId=bot.id)
-                    reinforceLearningStrategySerializer = ReinforceLearningStrategySerializer(reinforceLearningStrategy, data=strategyData)
+                    reinforceLearningStrategySerializer = ReinforceLearningStrategySerializer(reinforceLearningStrategy,
+                                                                                              data=strategyData)
 
                     if reinforceLearningStrategySerializer.is_valid():
                         reinforceLearningStrategySerializer.save()
@@ -178,23 +182,41 @@ class TradeView(APIView):
         return Response(serializer.data)
 
     def post(self, request, botId=None):
-        data = {
-            'time': timezone.localtime(),
-            'position': request.data['position'],
-            'price': request.data['price'],
-            'amount': request.data['amount'],
-            'asset': request.data['asset'],
-        }
+        bot = Bot.objects.get(id=botId)
+        isTrade = request.data['isTrade']
+        strategyName = bot['strategy']
 
-        serializer = TradeHistorySerializer(data=data)
+        if strategyName == 'HighLowStrategy':
+            strategy = HighLowStrategy.objects.get(botId=botId)
 
-        if serializer.is_valid():
-            serializer.save()
+            highPrice = strategy['HighPrice']
+            lowPrice = strategy['LowPrice']
 
-            queryset = TradeHistory.objects.all()
-            serializer = TradeHistorySerializer(queryset, many=True)
+            if isTrade is True:
+                exist = False
 
-            return Response(serializer.data)
+                for task in PeriodicTask.objects.all():
+                    if task.name == 'Bot' + str(botId):
+                        print('On')
+                        exist = True
+                        task.enable = True
+
+                if exist is False:
+                    schedule, created = IntervalSchedule.objects.get_or_create(every=1, period=IntervalSchedule.MINUTES)
+
+                    PeriodicTask.objects.create(
+                        interval=schedule,
+                        name='Bot' + str(botId),
+                        task='TestApp.tasks.high_low_strategy',
+                        args=(lowPrice, highPrice, bot['asset'])
+                    )
+            else:
+                for task in PeriodicTask.objects.all():
+                    if task.name == 'Bot' + str(botId):
+                        print('Off')
+                        task.enable = False
+
+            return Response(status=status.HTTP_200_OK)
 
         return Response(status=status.HTTP_400_BAD_REQUEST)
 

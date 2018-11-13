@@ -186,3 +186,23 @@ def save_bithumb_btc_1h():
         conn.close()
 
     return temp_data
+
+
+@app.task
+def high_low_strategy(highPrice, lowPrice, asset):
+    print('buy or sell')
+    """
+    if position == 'BUY':
+        if result is None:
+            result = BithumbAPI.market_buy('BTC', asset / lowPrice, lowPrice, payment_currency='KRW')
+            print(result)
+        else:
+            result = BithumbAPI.market_buy('BTC', result['units'], lowPrice, payment_currency='KRW')
+            print(result)
+
+        position = 'SELL'
+    else:
+        result = BithumbAPI.market_sell('BTC', result['units'], highPrice, payment_currency='KRW')
+        print(result)
+        position = 'BUY'
+    """

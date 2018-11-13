@@ -34,6 +34,7 @@ ALLOWED_HOSTS = [
 # Application definition
 
 INSTALLED_APPS = [
+    'django_celery_beat',
     'channels',
     'corsheaders',
     'rest_framework',

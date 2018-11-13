@@ -1,4 +1,4 @@
-from TestApp.models import Bot, HighLowStrategy, ReinforceLearningStrategy, Training, Running, TradeHistory, \
+from TestApp.models import Bot, HighLowStrategy, ReinforceLearningStrategy, TradeHistory, \
     Bithumb_BTC_1m, Bithumb_BTC_1h, Bithumb_BTC_1d
 from rest_framework import serializers
 
@@ -48,18 +48,6 @@ class BotSerializer(serializers.ModelSerializer):
             response['strategy'] = ReinforceLearningStrategySerializer(query).data
 
         return response
-
-
-class TrainingSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Training
-        fields = '__all__'
-
-
-class RunningSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Running
-        fields = '__all__'
 
 
 class TradeHistorySerializer(serializers.ModelSerializer):

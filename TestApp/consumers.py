@@ -3,10 +3,13 @@ import json
 import subprocess
 import os
 import random
-from ExchangeAPI.BithumbAPI import market_sell, market_buy, get_order_information
-from TestApp.models import Bot
 from time import sleep
+import math
 
+from ExchangeAPI.BithumbAPI import market_sell, market_buy, get_order_information, get_order_detail
+from TestApp.models import Bot, TradeHistory
+from TestApp.serializers import TradeHistorySerializer
+from datetime import datetime, timezone, timedelta
 
 class TradeConsumer(WebsocketConsumer):
     def connect(self):
@@ -32,9 +35,9 @@ class TradeConsumer(WebsocketConsumer):
             lowPrice = data['LowPrice']
 
             while True:
-                information = None
-
                 if result is not None:
+                    information = None
+
                     if position == 'BUY':
                         infomation = get_order_information(result['order_id'], 'ask', 'BTC')
                     else:
@@ -44,10 +47,44 @@ class TradeConsumer(WebsocketConsumer):
                         sleep(60)
 
                         continue
+                    else:
+                        if position == 'BUY':
+                            detail_data = get_order_detail(result['order_id'], 'ask', 'BTC')
 
+                            time = datetime.fromtimestamp(detail_data['transaction_date'], timedelta(hours=9)).strftime(
+                                '%Y-%m-%d %H:%M:%S')
+
+                            tradeHistoryData = {
+                                'time': time,
+                                'position': 'SELL',
+                                'price': detail_data['price'],
+                                'amount': detail_data['unit_traded'],
+                                'asset': detail_data['total'],
+                                'botId': bot
+                            }
+                        else:
+                            detail_data = get_order_detail(result['order_id'], 'bid', 'BTC')
+
+                            time = datetime.fromtimestamp(detail_data['transaction_date'], timedelta(hours=9)).strftime(
+                                '%Y-%m-%d %H:%M:%S')
+
+                            tradeHistoryData = {
+                                'time': time,
+                                'position': 'BUY',
+                                'price': detail_data['price'],
+                                'amount': detail_data['unit_traded'],
+                                'asset': detail_data['total'],
+                                'botId': bot
+                            }
+
+                        tradeHistorySerializer = TradeHistorySerializer(data=tradeHistoryData)
+
+                        if tradeHistorySerializer.is_valid():
+                            tradeHistorySerializer.save()
+                            
                 if position == 'BUY':
                     if result is None:
-                        result = market_buy('BTC', asset / lowPrice, lowPrice, payment_currency='KRW')
+                        result = market_buy('BTC', math.floor((asset / lowPrice) * 10000) / 10000, lowPrice, payment_currency='KRW')
                     else:
                         result = market_buy('BTC', information['units_remaining'], lowPrice, payment_currency='KRW')
 

@@ -195,11 +195,11 @@ class TradeView(APIView):
             if isTrade is True:
                 exist = False
 
-                for task in PeriodicTask.objects.all():
-                    if task.name == 'Bot' + str(botId):
-                        print('On')
-                        exist = True
-                        task.enable = True
+                if PeriodicTask.objects.count() != 0:
+                    for task in PeriodicTask.objects.all():
+                        if task.name == 'Bot' + str(botId):
+                            exist = True
+                            task.enable = True
 
                 if exist is False:
                     schedule, created = IntervalSchedule.objects.get_or_create(every=1, period=IntervalSchedule.MINUTES)
@@ -213,7 +213,6 @@ class TradeView(APIView):
             else:
                 for task in PeriodicTask.objects.all():
                     if task.name == 'Bot' + str(botId):
-                        print('Off')
                         task.enable = False
 
             return Response(status=status.HTTP_200_OK)

@@ -190,7 +190,8 @@ def save_bithumb_btc_1h():
 
 @app.task
 def high_low_strategy(highPrice, lowPrice, asset):
-    print('buy or sell')
+    return highPrice, lowPrice, asset
+    
     """
     if position == 'BUY':
         if result is None:

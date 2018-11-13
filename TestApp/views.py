@@ -208,7 +208,7 @@ class TradeView(APIView):
                         interval=schedule,
                         name='Bot' + str(botId),
                         task='TestApp.tasks.high_low_strategy',
-                        args=(lowPrice, highPrice, bot['asset'])
+                        args=(lowPrice, highPrice, bot.asset)
                     )
             else:
                 for task in PeriodicTask.objects.all():

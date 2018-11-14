@@ -11,6 +11,7 @@ from TestApp.models import Bot, TradeHistory
 from TestApp.serializers import TradeHistorySerializer
 from datetime import datetime, timezone, timedelta
 
+
 class TradeConsumer(WebsocketConsumer):
     def connect(self):
         self.accept()
@@ -27,92 +28,99 @@ class TradeConsumer(WebsocketConsumer):
         bot = Bot.objects.get(id=botId)
         asset = bot.asset
 
-        result = None
         position = 'BUY'
 
         if strategyName == 'HighLowStrategy':
             highPrice = data['HighPrice']
             lowPrice = data['LowPrice']
 
+            detail_data = None
+            result = None
+
             while True:
                 if result is not None:
-                    information = None
-
                     if position == 'BUY':
-                        infomation = get_order_information(result['order_id'], 'ask', 'BTC')
+                        detail_data = get_order_detail(result['order_id'], 'ask', 'BTC')
+
+                        if detail_data['status'] != '0000':
+                            sleep(60)
+
+                            continue
+
+                        time = datetime.fromtimestamp(int(detail_data['data'][0]['transaction_date']) / 1000000).strftime(
+                            '%Y-%m-%d %H:%M:%S')
+
+                        tradeHistoryData = {
+                            'time': time,
+                            'position': 'SELL',
+                            'price': detail_data['data'][0]['price'],
+                            'amount': detail_data['data'][0]['units_traded'],
+                            'asset': detail_data['data'][0]['total'],
+                            'botId': bot.id
+                        }
+
+                        print(tradeHistoryData)
+
                     else:
-                        infomation = get_order_information(result['order_id'], 'bid', 'BTC')
+                        detail_data = get_order_detail(result['order_id'], 'bid', 'BTC')
 
-                    if information['total'] == 'null':
-                        sleep(60)
+                        if detail_data['status'] != '0000':
+                            sleep(60)
 
-                        continue
-                    else:
-                        if position == 'BUY':
-                            detail_data = get_order_detail(result['order_id'], 'ask', 'BTC')
+                            continue
 
-                            time = datetime.fromtimestamp(detail_data['transaction_date'], timedelta(hours=9)).strftime(
-                                '%Y-%m-%d %H:%M:%S')
+                        print(detail_data)
 
-                            tradeHistoryData = {
-                                'time': time,
-                                'position': 'SELL',
-                                'price': detail_data['price'],
-                                'amount': detail_data['unit_traded'],
-                                'asset': detail_data['total'],
-                                'botId': bot
-                            }
-                        else:
-                            detail_data = get_order_detail(result['order_id'], 'bid', 'BTC')
+                        time = datetime.fromtimestamp(int(detail_data['data'][0]['transaction_date']) / 1000000).strftime(
+                            '%Y-%m-%d %H:%M:%S')
 
-                            time = datetime.fromtimestamp(detail_data['transaction_date'], timedelta(hours=9)).strftime(
-                                '%Y-%m-%d %H:%M:%S')
+                        tradeHistoryData = {
+                            'time': time,
+                            'position': 'BUY',
+                            'price': detail_data['data'][0]['price'],
+                            'amount': detail_data['data'][0]['units_traded'],
+                            'asset': detail_data['data'][0]['total'],
+                            'botId': bot.id
+                        }
 
-                            tradeHistoryData = {
-                                'time': time,
-                                'position': 'BUY',
-                                'price': detail_data['price'],
-                                'amount': detail_data['unit_traded'],
-                                'asset': detail_data['total'],
-                                'botId': bot
-                            }
+                        print(tradeHistoryData)
 
-                        tradeHistorySerializer = TradeHistorySerializer(data=tradeHistoryData)
+                    print(detail_data)
 
-                        if tradeHistorySerializer.is_valid():
-                            tradeHistorySerializer.save()
-                            
+                    tradeHistorySerializer = TradeHistorySerializer(data=tradeHistoryData)
+
+                    if tradeHistorySerializer.is_valid():
+                        tradeHistorySerializer.save()
+
                 if position == 'BUY':
                     if result is None:
-                        result = market_buy('BTC', math.floor((asset / lowPrice) * 10000) / 10000, lowPrice, payment_currency='KRW')
+                        result = market_buy('BTC', math.floor((asset / lowPrice) * 10000) / 10000, lowPrice,
+                                            payment_currency='KRW')
                     else:
-                        result = market_buy('BTC', information['units_remaining'], lowPrice, payment_currency='KRW')
+                        result = market_buy('BTC', detail_data['data'][0]['units_traded'], lowPrice, payment_currency='KRW')
 
                     position = 'SELL'
                 else:
-                    result = market_sell('BTC', result['units'], highPrice, payment_currency='BTC')
+                    result = market_sell('BTC', detail_data['data'][0]['units_traded'], highPrice, payment_currency='BTC')
                     position = 'BUY'
 
                 print(result)
 
                 sleep(60)
 
-        """
-        self.send(text_data=json.dumps({
-            'result': 'success'
-        }))
-        """
+    """
+    self.send(text_data=json.dumps({
+        'result': 'success'
+    }))
+    """
 
 
 class TrainConsumer(WebsocketConsumer):
     def connect(self):
-        self.num = random.randint(1, 100)
-        print(self.num)
         print('connect')
         self.accept()
 
     def disconnect(self, close_code):
-        print(self.num)
         print('disconnect')
 
     def receive(self, text_data):
@@ -122,7 +130,7 @@ class TrainConsumer(WebsocketConsumer):
         toDate = data['toDate']
         coin = data['coin']
 
-        #self.train(fromDate, toDate, coin)
+        # self.train(fromDate, toDate, coin)
 
         self.send(text_data=json.dumps({
             'result': 'success'
@@ -132,8 +140,9 @@ class TrainConsumer(WebsocketConsumer):
         fromDate = fromDate.split(' ')[0]
         toDate = toDate.split(' ')[0]
 
-        train_args = ['/usr/local/bin/python3', '/Users/seungyoon-kim/Desktop/TestServer/Strategy/main.py', 'from=' + fromDate, 'to=' + toDate, coin]
-        #train_args = ['/home/dskym0/envs/Crypstal/bin/python3', '/home/dskym0/SW_Maestro_Django/RLStrategy/main.py', 'from=' + fromDate, 'to=' + toDate, coin]
+        train_args = ['/usr/local/bin/python3', '/Users/seungyoon-kim/Desktop/TestServer/Strategy/main.py',
+                      'from=' + fromDate, 'to=' + toDate, coin]
+        # train_args = ['/home/dskym0/envs/Crypstal/bin/python3', '/home/dskym0/SW_Maestro_Django/RLStrategy/main.py', 'from=' + fromDate, 'to=' + toDate, coin]
         train = subprocess.Popen(train_args, stdout=subprocess.PIPE, env=os.environ.copy())
 
         out, err = train.communicate()
@@ -166,8 +175,9 @@ class RunConsumer(WebsocketConsumer):
     def run(self, filename, coin, asset):
         print(filename, coin, asset)
 
-        run_args = ['/usr/local/bin/python3', '/Users/seungyoon-kim/Desktop/TestServer/Strategy/main.py', 'filname=' + filename, 'asset=' + asset, coin]
-        #run_args = ['/usr/local/bin/python3', '/Users/seungyoon-kim/Desktop/TestServer/Strategy/main.py', 'filname=' + filename, 'asset=' + asset, coin]
+        run_args = ['/usr/local/bin/python3', '/Users/seungyoon-kim/Desktop/TestServer/Strategy/main.py',
+                    'filname=' + filename, 'asset=' + asset, coin]
+        # run_args = ['/usr/local/bin/python3', '/Users/seungyoon-kim/Desktop/TestServer/Strategy/main.py', 'filname=' + filename, 'asset=' + asset, coin]
         run = subprocess.Popen(run_args, stdout=subprocess.PIPE, env=os.environ.copy())
 
         out, err = run.communicate()

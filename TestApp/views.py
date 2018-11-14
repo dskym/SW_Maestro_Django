@@ -174,7 +174,7 @@ class BacktestView(APIView):
 
 class TradeView(APIView):
     def get(self, request, botId=None):
-        queryset = TradeHistory.objects.all()
+        queryset = TradeHistory.objects.filter(botId=botId)
         serializer = TradeHistorySerializer(queryset, many=True)
 
         return Response(serializer.data)

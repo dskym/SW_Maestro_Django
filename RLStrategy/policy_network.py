@@ -7,28 +7,30 @@ from keras.optimizers import sgd
 from keras.models import model_from_json
 
 class PolicyNetwork:
-    def __init__(self, input_dim, output_dim, lr=0.001, load_weight = None):
+    def __init__(self, input_dim, output_dim, lr=0.001):
         self.input_dim = input_dim
         self.lr = lr
 
         self.model = Sequential()
-        self.model.add(LSTM(256, input_shape=(1, input_dim),return_sequences=True, stateful=False, dropout=0.5))
+        self.model.add(LSTM(256, input_shape=(1, input_dim),return_sequences=True, stateful=False))
         self.model.add(BatchNormalization())
-        self.model.add(LSTM(256, return_sequences=True, stateful=False, dropout=0.5))
+        self.model.add(LSTM(256, return_sequences=True, stateful=False))
         self.model.add(BatchNormalization())
-        self.model.add(LSTM(256, return_sequences=False, stateful=False, dropout=0.5))
+        self.model.add(LSTM(256, return_sequences=True, stateful=False))
+        self.model.add(BatchNormalization())
+        self.model.add(LSTM(256, return_sequences=False, stateful=False))
         self.model.add(BatchNormalization())
         self.model.add(Dense(output_dim))
         self.model.add(Activation('sigmoid'))
-
-        self.model.compile(optimizer=sgd(lr=lr), loss='categorical_crossentropy', metrics=['accuracy'])
+        self.model.compile(optimizer=sgd(lr=lr), loss='binary_crossentropy', metrics=['accuracy'])
         self.prob = None
 
     def reset(self):
         self.prob = None
 
-    def predict(self, sample): # input_dim = 17 (15+2)
+    def predict(self, sample):
         self.prob = self.model.predict(np.array(sample).reshape((1, -1, self.input_dim)))[0]
+        print(self.prob)
         return self.prob
 
     def train_on_batch(self, x, y):
@@ -53,4 +55,3 @@ class PolicyNetwork:
         self.model = model_from_json(loaded_model_json)
         if model_path is not None:
             self.model.load_weights(model_path)
-

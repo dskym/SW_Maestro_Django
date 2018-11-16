@@ -179,56 +179,6 @@ class TradeView(APIView):
 
         return Response(serializer.data)
 
-    def post(self, request, botId=None):
-        bot = Bot.objects.get(id=botId)
-        isTrade = request.data['isTrade']
-        strategyName = bot.strategy
-
-        if strategyName == 'HighLowStrategy':
-            strategy = HighLowStrategy.objects.get(botId=botId)
-
-            highPrice = strategy.HighPrice
-            lowPrice = strategy.LowPrice
-
-            print(isTrade)
-
-            if isTrade is True:
-                exist = False
-
-                print(exist)
-                print(PeriodicTask.objects.count())
-
-                if PeriodicTask.objects.count() != 0:
-                    for task in PeriodicTask.objects.all():
-                        print(task.args)
-                        if task.name == 'Bot' + str(botId):
-                            exist = True
-                            task.enable = True
-                            task.save()
-
-                print(exist)
-
-                if exist is False:
-                    schedule, created = IntervalSchedule.objects.get_or_create(every=1, period=IntervalSchedule.MINUTES)
-
-                    task = PeriodicTask.objects.create(
-                        interval=schedule,
-                        name='Bot' + str(botId),
-                        task='TestApp.tasks.high_low_strategy',
-                        args=(lowPrice, highPrice, bot.asset)
-                    )
-            else:
-                for task in PeriodicTask.objects.all():
-                    if task.name == 'Bot' + str(botId):
-                        task.enable = False
-                        task.save()
-
-
-
-            return Response(status=status.HTTP_200_OK)
-
-        return Response(status=status.HTTP_400_BAD_REQUEST)
-
 
 class CandleView(APIView):
     def get(self, request):

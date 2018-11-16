@@ -60,7 +60,6 @@ class TradeConsumer(WebsocketConsumer):
                         }
 
                         print(tradeHistoryData)
-
                     else:
                         detail_data = get_order_detail(result['order_id'], 'bid', 'BTC')
 
@@ -96,23 +95,26 @@ class TradeConsumer(WebsocketConsumer):
                     if result is None:
                         result = market_buy('BTC', math.floor((asset / lowPrice) * 10000) / 10000, lowPrice,
                                             payment_currency='KRW')
+                        asset = asset - float(math.floor((asset / lowPrice) * 10000) / 10000) * lowPrice
+                        print('남은 자산 : ' + str(asset))
                     else:
-                        result = market_buy('BTC', detail_data['data'][0]['units_traded'], lowPrice, payment_currency='KRW')
+                        result = market_buy('BTC', math.floor(float(detail_data['data'][0]['units_traded']) * 10000) / 10000, lowPrice, payment_currency='KRW')
+                        asset = asset - int(detail_data['data'][0]['total'])
+                        print('남은 자산 : ' + str(asset))
 
                     position = 'SELL'
                 else:
-                    result = market_sell('BTC', detail_data['data'][0]['units_traded'], highPrice, payment_currency='BTC')
+                    volume = math.floor(float(detail_data['data'][0]['units_traded']) * 10000) / 10000
+
+                    result = market_sell('BTC', math.floor(float(detail_data['data'][0]['units_traded']) * 10000) / 10000, highPrice, payment_currency='BTC')
                     position = 'BUY'
+
+                    asset = asset + round(volume * highPrice - float(detail_data['data'][0]['fee']))
+                    print('자산 : ' + str(asset))
 
                 print(result)
 
                 sleep(60)
-
-    """
-    self.send(text_data=json.dumps({
-        'result': 'success'
-    }))
-    """
 
 
 class TrainConsumer(WebsocketConsumer):
@@ -172,12 +174,12 @@ class RunConsumer(WebsocketConsumer):
         }))
         """
 
-    def run(self, filename, coin, asset):
+    def run(self, model, coin, balance):
         print(filename, coin, asset)
 
-        run_args = ['/usr/local/bin/python3', '/Users/seungyoon-kim/Desktop/TestServer/Strategy/main.py',
-                    'filname=' + filename, 'asset=' + asset, coin]
-        # run_args = ['/usr/local/bin/python3', '/Users/seungyoon-kim/Desktop/TestServer/Strategy/main.py', 'filname=' + filename, 'asset=' + asset, coin]
+        run_args = ['/usr/local/bin/python3', '/Users/seungyoon-kim/Desktop/TestServer/Strategy/simulation.py',
+                    'model=' + model, 'coin=' + coin, 'balance=' + balance]
+        # run_args = ['/usr/local/bin/python3', '/Users/seungyoon-kim/Desktop/TestServer/Strategy/simulation.py', 'model=' + model, 'coin=' + coin, 'balance=' + balance]
         run = subprocess.Popen(run_args, stdout=subprocess.PIPE, env=os.environ.copy())
 
         out, err = run.communicate()

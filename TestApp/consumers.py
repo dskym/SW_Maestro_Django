@@ -47,8 +47,7 @@ class TradeConsumer(WebsocketConsumer):
 
                             continue
 
-                        time = datetime.fromtimestamp(int(detail_data['data'][0]['transaction_date']) / 1000000).strftime(
-                            '%Y-%m-%d %H:%M:%S')
+                        time = datetime.fromtimestamp(int(detail_data['data'][0]['transaction_date']) / 1000000).strftime('%Y-%m-%d %H:%M:%S')
 
                         tradeHistoryData = {
                             'time': time,
@@ -76,8 +75,12 @@ class TradeConsumer(WebsocketConsumer):
                             'position': position
                         }))
 
-                        time = datetime.fromtimestamp(int(detail_data['data'][0]['transaction_date']) / 1000000).strftime(
-                            '%Y-%m-%d %H:%M:%S')
+                        time = datetime.fromtimestamp(int(detail_data['data'][0]['transaction_date']) / 1000000).strftime('%Y-%m-%d %H:%M:%S')
+
+
+                        self.send(text_data=json.dumps({
+                            'time': time
+                        }))
 
                         tradeHistoryData = {
                             'time': time,

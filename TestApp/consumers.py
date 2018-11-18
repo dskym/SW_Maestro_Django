@@ -60,7 +60,7 @@ class TradeConsumer(WebsocketConsumer):
                         }
 
                         self.send(text_data=json.dumps({
-                            'result': tradeHistoryData
+                            'history': tradeHistoryData
                         }))
                     else:
                         detail_data = get_order_detail(result['order_id'], 'bid', 'BTC')
@@ -71,7 +71,7 @@ class TradeConsumer(WebsocketConsumer):
                             continue
 
                         self.send(text_data=json.dumps({
-                            'result': detail_data
+                            'detail_data': detail_data
                         }))
 
                         time = datetime.fromtimestamp(int(detail_data['data'][0]['transaction_date']) / 1000000).strftime(
@@ -87,11 +87,11 @@ class TradeConsumer(WebsocketConsumer):
                         }
 
                         self.send(text_data=json.dumps({
-                            'result': tradeHistoryData
+                            'history': tradeHistoryData
                         }))
 
                     self.send(text_data=json.dumps({
-                        'result': detail_data
+                        'detail_data': detail_data
                     }))
 
                     tradeHistorySerializer = TradeHistorySerializer(data=tradeHistoryData)

@@ -49,10 +49,12 @@ class TradeConsumer(WebsocketConsumer):
 
                         time = datetime.fromtimestamp(int(detail_data['data'][0]['transaction_date']) / 1000000).strftime('%Y-%m-%d %H:%M:%S')
 
+                        """
                         self.send(text_data=json.dumps({
                             'time': time,
                             'botId': bot.id
                         }))
+                        """
 
                         tradeHistoryData = {
                             'time': time,
@@ -63,12 +65,15 @@ class TradeConsumer(WebsocketConsumer):
                             'botId': bot.id
                         }
 
+                        """
                         self.send(text_data=json.dumps({
                             'history': tradeHistoryData,
                             'position': position,
-                            'asset': asset + round(float(detail_data['data'][0]['unitsx_traded']) * float(
+                            'asset': asset + round(float(detail_data['data'][0]['units_traded']) * float(
                                 detail_data['data'][0]['price']) - float(detail_data['data'][0]['fee'])),
                         }))
+                        """
+
                     else:
                         detail_data = get_order_detail(result['order_id'], 'bid', 'BTC')
 
@@ -77,20 +82,23 @@ class TradeConsumer(WebsocketConsumer):
 
                             continue
 
+                        """
                         self.send(text_data=json.dumps({
                             'detail_data': detail_data,
                             'position': position
                         }))
+                        """
 
                         time = datetime.fromtimestamp(int(detail_data['data'][0]['transaction_date']) / 1000000).strftime('%Y-%m-%d %H:%M:%S')
 
-
+                        """
                         self.send(text_data=json.dumps({
                             'time': time,
                             'botId': bot.id,
                             'asset': asset + round(float(detail_data['data'][0]['units_traded']) * float(
                                 detail_data['data'][0]['price']) - float(detail_data['data'][0]['fee'])),
                         }))
+                        """
 
                         tradeHistoryData = {
                             'time': time,
@@ -101,15 +109,19 @@ class TradeConsumer(WebsocketConsumer):
                             'botId': bot.id
                         }
 
+                        """
                         self.send(text_data=json.dumps({
                             'history': tradeHistoryData,
                             'position': position
                         }))
+                        """
 
+                    """
                     self.send(text_data=json.dumps({
                         'detail_data': detail_data,
                         'position': position
                     }))
+                    """
 
                     tradeHistorySerializer = TradeHistorySerializer(data=tradeHistoryData)
 
@@ -137,10 +149,12 @@ class TradeConsumer(WebsocketConsumer):
                     asset = asset + round(volume * highPrice - float(detail_data['data'][0]['fee']))
                     print('자산 : ' + str(asset))
 
+                """
                 self.send(text_data=json.dumps({
                     'result': result,
                     'position': position
                 }))
+                """
 
                 sleep(60)
 

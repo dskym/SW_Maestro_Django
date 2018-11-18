@@ -10,6 +10,10 @@ from ExchangeAPI.BithumbAPI import market_sell, market_buy, get_order_informatio
 from TestApp.models import Bot, TradeHistory
 from TestApp.serializers import TradeHistorySerializer
 from datetime import datetime, timezone, timedelta
+import logging
+
+
+logger = logging.getLogger(__name__)
 
 
 class TradeConsumer(WebsocketConsumer):
@@ -174,19 +178,22 @@ class TrainConsumer(WebsocketConsumer):
         toDate = data['toDate']
         coin = data['coin']
 
+        print(text_data)
+
         # self.train(fromDate, toDate, coin)
 
         self.send(text_data=json.dumps({
-            'result': 'success'
+            'result': 'success',
+            'filename': 'model_10336000.h5',
         }))
 
     def train(self, fromDate, toDate, coin):
         fromDate = fromDate.split(' ')[0]
         toDate = toDate.split(' ')[0]
 
-        train_args = ['/usr/local/bin/python3', '/Users/seungyoon-kim/Desktop/TestServer/Strategy/main.py',
+        train_args = ['/usr/local/bin/python3', '/Users/seungyoon-kim/Desktop/SW_Maestro_Django/RLStrategy/main.py',
                       'from=' + fromDate, 'to=' + toDate, coin]
-        # train_args = ['/home/dskym0/envs/Crypstal/bin/python3', '/home/dskym0/SW_Maestro_Django/RLStrategy/main.py', 'from=' + fromDate, 'to=' + toDate, coin]
+        #train_args = ['/home/dskym0/envs/Crypstal/bin/python3', '/home/dskym0/SW_Maestro_Django/RLStrategy/main.py', 'from=' + fromDate, 'to=' + toDate, coin]
         train = subprocess.Popen(train_args, stdout=subprocess.PIPE, env=os.environ.copy())
 
         out, err = train.communicate()
@@ -194,6 +201,7 @@ class TrainConsumer(WebsocketConsumer):
 
 
 class RunConsumer(WebsocketConsumer):
+
     def connect(self):
         print('connect')
         self.accept()
@@ -202,27 +210,27 @@ class RunConsumer(WebsocketConsumer):
         print('disconnect')
 
     def receive(self, text_data):
+        print(text_data)
+
         data = json.loads(text_data)
 
-        filename = data['filename']
-        asset = data['asset']
+        asset = str(data['asset'])
         coin = data['coin']
+        filename = '10336000'
 
-        """
         self.run(filename, coin, asset)
 
         self.send(text_data=json.dumps({
             'result': 'success'
         }))
-        """
 
-    def run(self, model, coin, balance):
-        print(filename, coin, asset)
+    def run(self, filename, coin, balance):
+        print(filename, coin, balance)
 
-        run_args = ['/usr/local/bin/python3', '/Users/seungyoon-kim/Desktop/TestServer/Strategy/simulation.py',
-                    'model=' + model, 'coin=' + coin, 'balance=' + balance]
-        # run_args = ['/usr/local/bin/python3', '/Users/seungyoon-kim/Desktop/TestServer/Strategy/simulation.py', 'model=' + model, 'coin=' + coin, 'balance=' + balance]
+        run_args = ['/usr/local/bin/python3', '/Users/seungyoon-kim/Desktop/SW_Maestro_Django/RLStrategy/simulation.py', filename, coin, balance]
+        # run_args = ['/home/dskym0/envs/Crypstal/bin/python3', '/home/dskym0/SW_Maestro_Django/RLStrategy/simulation.py', filename, coin, balance]
         run = subprocess.Popen(run_args, stdout=subprocess.PIPE, env=os.environ.copy())
 
         out, err = run.communicate()
+        logger.debug('Output = {}'.format(out.decode('utf-8')))
         print(out.decode('utf-8'))

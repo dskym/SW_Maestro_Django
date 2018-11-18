@@ -58,12 +58,12 @@ class BithumbMachine(Machine):
         config = configparser.ConfigParser()
         config.read('config.ini')
 
-        self.CLIENT_ID = config['BITHUMB']['CONNECT_KEY']
-        self.CLIENT_SECRET = config['BITHUMB']['SECRET_KEY']
-        self.USER_NAME = config['BITHUMB']['USERNAME']
-#        self.CLIENT_ID = 'dcb1ee47fea17e86b29f85b413dbeb4c'
-#        self.CLIENT_SECRET = '10c692fce45b32004dc1cca0a6f4e6c'
-#        self.USER_NAME = 'dd_sol@khu.ac.kr'
+#        self.CLIENT_ID = config['BITHUMB']['CONNECT_KEY']
+#        self.CLIENT_SECRET = config['BITHUMB']['SECRET_KEY']
+#        self.USER_NAME = config['BITHUMB']['USERNAME']
+        self.CLIENT_ID = '5709ca4841ba8059e7246b55b8358a37'
+        self.CLIENT_SECRET = '5105ce0f3360623c6ce8c6f8f6212cff'
+        self.USER_NAME = 'dskym@naver.com'
         #self.access_token = None
         #self.refresh_token = None
         #self.token_type = None

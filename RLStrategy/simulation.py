@@ -34,7 +34,7 @@ if __name__ == '__main__':
 
     policy_learner = PolicyLearner(
                 coin_code=COIN, coin_chart=None, training_data=None,
-                min_trading_unit=0.001, max_trading_unit=0.002)
+                min_trading_unit=0.001, max_trading_unit=0.001)
 
     policy_learner.trade(balance=BALANCE,
                          model_path=os.path.join(settings.BASE_DIR, 'models/{}/model_{}.h5'.format(COIN,MODEL)))

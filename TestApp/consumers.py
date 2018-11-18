@@ -55,7 +55,7 @@ class TradeConsumer(WebsocketConsumer):
                             'position': 'SELL',
                             'price': detail_data['data'][0]['price'],
                             'amount': detail_data['data'][0]['units_traded'],
-                            'asset': detail_data['data'][0]['total'],
+                            'asset': asset,
                             'botId': bot.id
                         }
 
@@ -78,7 +78,7 @@ class TradeConsumer(WebsocketConsumer):
                             'position': 'BUY',
                             'price': detail_data['data'][0]['price'],
                             'amount': detail_data['data'][0]['units_traded'],
-                            'asset': detail_data['data'][0]['total'],
+                            'asset': asset + round(float(detail_data['data'][0]['unit_traded']) * float(detail_data['data'][0]['price']) - float(detail_data['data'][0]['fee'])),
                             'botId': bot.id
                         }
 

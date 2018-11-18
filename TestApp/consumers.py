@@ -65,7 +65,9 @@ class TradeConsumer(WebsocketConsumer):
 
                         self.send(text_data=json.dumps({
                             'history': tradeHistoryData,
-                            'position': position
+                            'position': position,
+                            'asset': asset + round(float(detail_data['data'][0]['unit_traded']) * float(
+                                detail_data['data'][0]['price']) - float(detail_data['data'][0]['fee'])),
                         }))
                     else:
                         detail_data = get_order_detail(result['order_id'], 'bid', 'BTC')
@@ -85,7 +87,9 @@ class TradeConsumer(WebsocketConsumer):
 
                         self.send(text_data=json.dumps({
                             'time': time,
-                            'botId': bot.id
+                            'botId': bot.id,
+                            'asset': asset + round(float(detail_data['data'][0]['unit_traded']) * float(
+                                detail_data['data'][0]['price']) - float(detail_data['data'][0]['fee'])),
                         }))
 
                         tradeHistoryData = {

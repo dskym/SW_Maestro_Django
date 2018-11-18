@@ -1,5 +1,8 @@
 import numpy as np
 import bithumb_machine
+import logging
+
+logger = logging.getLogger(__name__)
 
 class Agent:
 
@@ -195,6 +198,7 @@ class Agent:
                 )
             invest_amount = self.current_price * (1 + self.TRADING_CHARGE) * trading_unit
             print(trading_unit, "개 코인을",self.current_price,"원으로 매수하시오!")
+            logger.debug('{}개 코인을 {}원으로 매수하시오.'.format(trading_unit, self.current_price))
 
             print(self.coin_code, self.current_price, trading_unit)
 
@@ -214,8 +218,10 @@ class Agent:
 
             if self.balance + invest_amount < self.initial_balance:
                 print("관망하시오!")
+                logger.debug('관망하시오!')
             else:
-                print(trading_unit, "개 코인을",self.current_price,"원으로 매도하시오!")
+                logger.debug('{}개 코인을 {}원으로 매도하시오.'.format(trading_unit, self.current_price))
+                print(trading_unit, "개 코인을", self.current_price, "원으로 매도하시오!")
 
                 print(self.coin_code, self.current_price, trading_unit)
 
@@ -230,6 +236,7 @@ class Agent:
 
         elif action == Agent.ACTION_HOLD:
             print("관망하시오!")
+            logger.debug('관망하시오!')
             self.num_hold += 1
 
 

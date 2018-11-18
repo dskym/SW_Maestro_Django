@@ -191,8 +191,7 @@ class TrainConsumer(WebsocketConsumer):
         fromDate = fromDate.split(' ')[0]
         toDate = toDate.split(' ')[0]
 
-        #train_args = ['/usr/local/bin/python3', '/Users/seungyoon-kim/Desktop/SW_Maestro_Django/RLStrategy/main.py',
-                      'from=' + fromDate, 'to=' + toDate, coin]
+        #train_args = ['/usr/local/bin/python3', '/Users/seungyoon-kim/Desktop/SW_Maestro_Django/RLStrategy/main.py', 'from=' + fromDate, 'to=' + toDate, coin]
         train_args = ['/home/dskym0/envs/Crypstal/bin/python3', '/home/dskym0/SW_Maestro_Django/RLStrategy/main.py', 'from=' + fromDate, 'to=' + toDate, coin]
         train = subprocess.Popen(train_args, stdout=subprocess.PIPE, env=os.environ.copy())
 

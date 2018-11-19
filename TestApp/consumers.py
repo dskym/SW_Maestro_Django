@@ -11,9 +11,11 @@ from TestApp.models import Bot, TradeHistory
 from TestApp.serializers import TradeHistorySerializer
 from datetime import datetime, timezone, timedelta
 import logging
+from RLStrategy.slack import PushSlack
 
 
 logger = logging.getLogger(__name__)
+slack = PushSlack()
 
 
 class TradeConsumer(WebsocketConsumer):
@@ -60,6 +62,10 @@ class TradeConsumer(WebsocketConsumer):
                         }))
                         """
 
+                        if bot.chatBotAlarm is True:
+                            self.slack.send_message("#highlow_strategy_log",
+                                                    "{}개 코인을 {}원으로 매도했습니다!".format(detail_data['data'][0]['units_traded'], detail_data['data'][0]['price']))
+
                         tradeHistoryData = {
                             'time': time,
                             'position': 'SELL',
@@ -103,6 +109,10 @@ class TradeConsumer(WebsocketConsumer):
                                 detail_data['data'][0]['price']) - float(detail_data['data'][0]['fee'])),
                         }))
                         """
+
+                        if bot.chatBotAlarm is True:
+                            self.slack.send_message("#highlow_strategy_log",
+                                                    "{}개 코인을 {}원으로 매수했습니다!".format(detail_data['data'][0]['units_traded'], detail_data['data'][0]['price']))
 
                         tradeHistoryData = {
                             'time': time,
@@ -215,7 +225,7 @@ class RunConsumer(WebsocketConsumer):
 
         asset = str(data['asset'])
         coin = data['coin']
-        filename = '10336000'
+        filename = '20181119142546'
 
         self.run(filename, coin, asset)
 

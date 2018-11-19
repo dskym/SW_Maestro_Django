@@ -63,7 +63,7 @@ class BithumbMachine(Machine):
 #        self.USER_NAME = config['BITHUMB']['USERNAME']
         self.CLIENT_ID = '5709ca4841ba8059e7246b55b8358a37'
         self.CLIENT_SECRET = '5105ce0f3360623c6ce8c6f8f6212cff'
-        self.USER_NAME = 'dskym@naver.com'
+        self.USER_NAME = 'dd_sol@khu.ac.kr'
         #self.access_token = None
         #self.refresh_token = None
         #self.token_type = None

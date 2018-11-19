@@ -1,15 +1,8 @@
 import logging
 import os
 import settings
-import data_manager
 from policy_learner import PolicyLearner
 import argparse
-import get_data_manager
-import urllib.request
-import time
-import datetime
-import pandas as pd
-import numpy as np
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
@@ -34,7 +27,7 @@ if __name__ == '__main__':
 
     policy_learner = PolicyLearner(
                 coin_code=COIN, coin_chart=None, training_data=None,
-                min_trading_unit=0.001, max_trading_unit=0.001)
+                min_trading_unit=0.01, max_trading_unit=0.03)
 
     policy_learner.trade(balance=BALANCE,
                          model_path=os.path.join(settings.BASE_DIR, 'models/{}/model_{}.h5'.format(COIN,MODEL)))

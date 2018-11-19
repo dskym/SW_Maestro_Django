@@ -63,11 +63,11 @@ if __name__ == '__main__':
 
     policy_learner = PolicyLearner(
          coin_code=COIN, coin_chart=coin_chart, training_data=training_data, model_ver=model_ver,
-         min_trading_unit=1, max_trading_unit=3, delayed_reward_threshold=.03, start_date=FROM, end_date=TO, lr=.09)
+         min_trading_unit=0.001, max_trading_unit=0.003, delayed_reward_threshold=.005, start_date=FROM, end_date=TO, lr=.009)
 
     print("Train start !!")
 
-    policy_learner.fit(balance=10000000, num_epoches=1000,
+    policy_learner.fit(balance=100000, num_epoches=500,
                        discount_factor=0, start_epsilon=.5)
 
     model_dir = os.path.join(settings.BASE_DIR, 'models/%s' % COIN)

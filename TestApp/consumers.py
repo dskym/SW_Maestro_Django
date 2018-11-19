@@ -243,3 +243,5 @@ class RunConsumer(WebsocketConsumer):
         out, err = run.communicate()
         logger.debug('Output = {}'.format(out.decode('utf-8')))
         print(out.decode('utf-8'))
+
+/home/dskym0/envs/Crypstal/bin/python3 /home/dskym0/SW_Maestro_Django/RLStrategy/simulation.py 20181119142546 BTC 10000

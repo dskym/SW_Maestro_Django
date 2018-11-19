@@ -2,9 +2,6 @@ import numpy as np
 import bithumb_machine
 import slack
 
-from TestApp.models import TradeHistory
-from TestApp.serializers import TradeHistorySerializer
-
 
 class Agent:
 
@@ -184,14 +181,14 @@ class Agent:
         if self.environment.observe_simul()[1] != 0:
             self.current_price = self.environment.observe_simul()[1]
         else:
-            self.current_price = self.last_price
+            self.current_price = self.current_price
             action = Agent.ACTION_HOLD
 
         self.immediate_reward = 0
 
         if action == Agent.ACTION_BUY:
-            self.trading_unit = self.decide_trading_unit(confidence)
-            balance = self.balance - self.current_price * (1 + self.TRADING_CHARGE) * self.trading_unit
+            trading_unit = self.decide_trading_unit(confidence)
+            balance = self.balance - self.current_price * (1 + self.TRADING_CHARGE) * trading_unit
 
             if balance < 0:
                 trading_unit = max(min(
@@ -226,8 +223,8 @@ class Agent:
                 self.num_sell += 1
 
         elif action == Agent.ACTION_HOLD:
-        print("관망!")
-        self.num_hold += 1
+            print("관망!")
+            self.num_hold += 1
 
         self.portfolio_value = self.balance + self.current_price * self.num_coins
         loss = ((self.portfolio_value - self.base_portfolio_value) / self.base_portfolio_value)

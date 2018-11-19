@@ -2,6 +2,10 @@ import numpy as np
 import bithumb_machine
 import slack
 
+from TestApp.models import TradeHistory
+from TestApp.serializers import TradeHistorySerializer
+
+
 class Agent:
 
     STATE_DIM = 2
@@ -36,8 +40,6 @@ class Agent:
         self.num_hold = 0
         self.immediate_reward = 0
         self.current_price = 0
-        self.last_price = 0
-        self.trading_unit = 0
 
         self.ratio_hold = 0
         self.ratio_portfolio_value = 0
@@ -157,8 +159,6 @@ class Agent:
             self.balance += invest_amount
             self.num_sell += 1
 
-
-
         elif action == Agent.ACTION_HOLD:
             self.num_hold += 1
         self.portfolio_value = self.balance + current_price * self.num_coins
@@ -175,7 +175,6 @@ class Agent:
         else:
             delayed_reward = 0
         return self.immediate_reward, delayed_reward
-
 
     def act_simul(self, action, confidence):
 
@@ -195,14 +194,16 @@ class Agent:
             balance = self.balance - self.current_price * (1 + self.TRADING_CHARGE) * self.trading_unit
 
             if balance < 0:
-                self.trading_unit = max(min(
+                trading_unit = max(min(
                     int(self.balance / (self.current_price * (1 + self.TRADING_CHARGE))), self.max_trading_unit),
                     self.min_trading_unit
                 )
-            invest_amount = self.current_price * (1 + self.TRADING_CHARGE) * self.trading_unit
-            self.slack.send_message("#auto-trading", "{}개 코인을 {}원으로 매수했습니다!".format(self.trading_unit, self.current_price))
-            print(self.trading_unit, "개 코인을", self.current_price,"원으로 매수!")
-            self.last_price = self.current_price
+            invest_amount = self.current_price * (1 + self.TRADING_CHARGE) * trading_unit
+
+            self.slack.send_message("#auto-trading", "{}개 코인을 {}원으로 매수했습니다!".format(trading_unit, self.current_price))
+
+            result = self.bithumb_machine.buy_order(self.coin_code, int(self.current_price), trading_unit)
+            print(result)
 
             self.balance -= invest_amount
             self.num_coins += self.trading_unit
@@ -213,23 +214,20 @@ class Agent:
             self.trading_unit = min(self.trading_unit, self.num_coins)
             invest_amount = self.current_price * (1 - (self.TRADING_TAX + self.TRADING_CHARGE)) * self.trading_unit
 
-#            if self.balance + invest_amount < self.initial_balance:
-#                print("관망!")
+            if self.balance + invest_amount < self.initial_balance:
+                print("관망!")
+            else:
+                self.slack.send_message("#auto-trading", "{}개 코인을 {}원으로 매도했습니다!".format(trading_unit, self.current_price))
+                result = self.bithumb_machine.sell_order(self.coin_code, int(self.current_price), 0.001)
+                print(result)
 
-#            else:
-            self.slack.send_message("#auto-trading", "{}개 코인을 {}원으로 매도했습니다!".format(self.trading_unit, self.current_price))
-            print(self.trading_unit, "개 코인을",self.current_price,"원으로 매도!")
-
-
-            self.num_coins -= self.trading_unit
-            self.balance += invest_amount
-            self.num_sell += 1
+                self.num_coins -= trading_unit
+                self.balance += invest_amount
+                self.num_sell += 1
 
         elif action == Agent.ACTION_HOLD:
-            print("관망!")
-            self.num_hold += 1
-
-        print(self.current_price, self.trading_unit, self.num_coins)
+        print("관망!")
+        self.num_hold += 1
 
         self.portfolio_value = self.balance + self.current_price * self.num_coins
         loss = ((self.portfolio_value - self.base_portfolio_value) / self.base_portfolio_value)

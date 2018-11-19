@@ -15,10 +15,10 @@ if __name__ == '__main__':
     COIN = args.COIN
     BALANCE = args.BALANCE
 
-    log_dir = os.path.join(settings.BASE_DIR, 'logs/%s' % COIN)
+    log_dir = os.path.join(settings.BASE_DIR, 'logs/%s' % 'bitcoin_min')
     timestr = settings.get_time_str()
     file_handler = logging.FileHandler(filename=os.path.join(
-        log_dir, "%s_%s.log" % (COIN, timestr)), encoding='utf-8')
+        log_dir, "%s_%s.log" % ('bitcoin_min', timestr)), encoding='utf-8')
     stream_handler = logging.StreamHandler()
     file_handler.setLevel(logging.DEBUG)
     stream_handler.setLevel(logging.INFO)
@@ -30,4 +30,4 @@ if __name__ == '__main__':
                 min_trading_unit=0.01, max_trading_unit=0.03)
 
     policy_learner.trade(balance=BALANCE,
-                         model_path=os.path.join(settings.BASE_DIR, 'models/{}/model_{}.h5'.format(COIN,MODEL)))
+                         model_path=os.path.join(settings.BASE_DIR, 'models/{}/model_{}.h5'.format('bitcoin_min',MODEL)))

@@ -63,7 +63,7 @@ class TradeConsumer(WebsocketConsumer):
                         """
 
                         if bot.chatBotAlarm is True:
-                            self.slack.send_message("#highlow_strategy_log",
+                            slack.send_message("#highlow_strategy_log",
                                                     "{}개 코인을 {}원으로 매도했습니다!".format(detail_data['data'][0]['units_traded'], detail_data['data'][0]['price']))
 
                         tradeHistoryData = {
@@ -111,7 +111,7 @@ class TradeConsumer(WebsocketConsumer):
                         """
 
                         if bot.chatBotAlarm is True:
-                            self.slack.send_message("#highlow_strategy_log",
+                            slack.send_message("#highlow_strategy_log",
                                                     "{}개 코인을 {}원으로 매수했습니다!".format(detail_data['data'][0]['units_traded'], detail_data['data'][0]['price']))
 
                         tradeHistoryData = {

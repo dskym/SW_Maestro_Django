@@ -63,7 +63,7 @@ class TradeConsumer(WebsocketConsumer):
                         """
 
                         if bot.chatBotAlarm is True:
-                            slack.send_message("#highlow_strategy_log",
+                            slack.send_message("#test_log",
                                                     "{}개 코인을 {}원으로 매도했습니다!".format(detail_data['data'][0]['units_traded'], detail_data['data'][0]['price']))
 
                         tradeHistoryData = {
@@ -111,7 +111,7 @@ class TradeConsumer(WebsocketConsumer):
                         """
 
                         if bot.chatBotAlarm is True:
-                            slack.send_message("#highlow_strategy_log",
+                            slack.send_message("#test_log",
                                                     "{}개 코인을 {}원으로 매수했습니다!".format(detail_data['data'][0]['units_traded'], detail_data['data'][0]['price']))
 
                         tradeHistoryData = {
@@ -155,12 +155,13 @@ class TradeConsumer(WebsocketConsumer):
 
                     position = 'SELL'
                 else:
-                    volume = math.floor(float(detail_data['data'][0]['units_traded']) * 10000) / 10000
-
                     result = market_sell('BTC', math.floor(float(detail_data['data'][0]['units_traded']) * 10000) / 10000, highPrice, payment_currency='BTC')
                     position = 'BUY'
 
-                    asset = asset + round(volume * highPrice - float(detail_data['data'][0]['fee']))
+                    asset = asset + round(
+                        float(detail_data['data'][0]['units_traded']) * float(detail_data['data'][0]['price']) - float(
+                            detail_data['data'][0]['fee']))
+
                     print('자산 : ' + str(asset))
 
                 """
@@ -194,7 +195,7 @@ class TrainConsumer(WebsocketConsumer):
 
         self.send(text_data=json.dumps({
             'result': 'success',
-            'filename': 'model_10336000.h5',
+            'filename': 'model_20181119142546.h5',
         }))
 
     def train(self, fromDate, toDate, coin):
@@ -243,5 +244,3 @@ class RunConsumer(WebsocketConsumer):
         out, err = run.communicate()
         logger.debug('Output = {}'.format(out.decode('utf-8')))
         print(out.decode('utf-8'))
-
-/home/dskym0/envs/Crypstal/bin/python3 /home/dskym0/SW_Maestro_Django/RLStrategy/simulation.py 20181119142546 BTC 10000
